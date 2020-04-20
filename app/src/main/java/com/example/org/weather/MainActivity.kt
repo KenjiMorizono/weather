@@ -17,16 +17,17 @@ import androidx.appcompat.app.AlertDialog
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
+    private var gpsEnabled = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        var locationmanager = (getSystemService(Context.LOCATION_SERVICE) as LocationManager)
-        if (!locationmanager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+        var locationManager = (getSystemService(Context.LOCATION_SERVICE) as LocationManager)
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
             Log.i("WARNING", "GPS NOT AVAILABLE REQUESTING GPS ENABLE...")
             buildAlertNoGps()
-
+            gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         }
 
         fab.setOnClickListener { view ->
@@ -36,9 +37,11 @@ class MainActivity : AppCompatActivity() {
 
     fun buildAlertNoGps(){
         var builder = AlertDialog.Builder(this, R.style.Theme_AppCompat_Dialog_Alert)
+        var locationManager =(getSystemService(Context.LOCATION_SERVICE) as LocationManager)
 
         val positiveButtonClick = { dialog: DialogInterface, which: Int ->
             startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+
         }
 
         val negativeButtonClick = {dialog: DialogInterface, which: Int ->
