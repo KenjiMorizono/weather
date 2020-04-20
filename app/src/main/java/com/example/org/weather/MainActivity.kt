@@ -24,7 +24,6 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         var locationmanager = (getSystemService(Context.LOCATION_SERVICE) as LocationManager)
         if (!locationmanager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-
             Log.i("WARNING", "GPS NOT AVAILABLE REQUESTING GPS ENABLE...")
             buildAlertNoGps()
 
@@ -37,20 +36,21 @@ class MainActivity : AppCompatActivity() {
 
     fun buildAlertNoGps(){
         var builder = AlertDialog.Builder(this, R.style.Theme_AppCompat_Dialog_Alert)
+
+        val positiveButtonClick = { dialog: DialogInterface, which: Int ->
+            startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+        }
+
+        val negativeButtonClick = {dialog: DialogInterface, which: Int ->
+            dialog.cancel()
+        }
+
         builder.setMessage("Your GPS is disabled, do you want to enable it?")
             .setCancelable(false)
             .setPositiveButton("Yes", DialogInterface.OnClickListener(function = positiveButtonClick))
             .setNegativeButton("No", DialogInterface.OnClickListener(function = negativeButtonClick))
 
 
-    }
-
-    val positiveButtonClick = { dialog: DialogInterface, which: Int ->
-        startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-    }
-
-    val negativeButtonClick = {dialog: DialogInterface, which: Int ->
-        dialog.cancel()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
