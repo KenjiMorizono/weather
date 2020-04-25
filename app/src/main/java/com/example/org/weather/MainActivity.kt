@@ -35,15 +35,6 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         getLocationInfo()
 
-        if (retrievedLocation) { // Retrieved user location data from device display weather info
-
-
-        }
-
-        else { // Did not get user's location from sensor, go to zip code entry fragment
-
-        }
-
         fab.setOnClickListener { view ->
 
         }
