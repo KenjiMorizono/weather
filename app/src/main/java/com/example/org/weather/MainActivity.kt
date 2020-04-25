@@ -35,7 +35,12 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         getLocationInfo()
 
+        Log.i("INFO", "Latitude: " + latitude)
+        Log.i("INFO", "Longitude: " + longitude)
+
         fab.setOnClickListener { view ->
+            Log.i("INFO", "Latitude: " + latitude)
+            Log.i("INFO", "Longitude: " + longitude)
 
         }
     }
