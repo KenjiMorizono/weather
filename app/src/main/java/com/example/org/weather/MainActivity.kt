@@ -5,13 +5,11 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Criteria
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
@@ -20,7 +18,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.content_main.*
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -29,16 +26,26 @@ class MainActivity : AppCompatActivity() {
     private val REQUEST_PERMISSION_LOCATION = 255
     private var latitude = 0.0
     private var longitude = 0.0
+    private var celsius = false
+    private var retrievedLocation = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-
         getLocationInfo()
 
+        if (retrievedLocation) { // Retrieved user location data from device display weather info
+
+
+        }
+
+        else { // Did not get user's location from sensor, go to zip code entry fragment
+
+        }
+
         fab.setOnClickListener { view ->
-            helloWorldTextView.text = latitude.toString()
+
         }
     }
 
@@ -68,6 +75,7 @@ class MainActivity : AppCompatActivity() {
                             if (location != null){
                                 latitude = location.latitude
                                 longitude = location.longitude
+                                retrievedLocation = true
                                 locationManager.removeUpdates(this)
                             }
 
@@ -89,6 +97,7 @@ class MainActivity : AppCompatActivity() {
                     if (location != null && location.time > Calendar.getInstance().timeInMillis - 2 * 60 * 100){
                         latitude = location.latitude
                         longitude = location.longitude
+                        retrievedLocation = true
 
                     }
                     else {
@@ -157,6 +166,7 @@ class MainActivity : AppCompatActivity() {
                             if (location != null){
                                 latitude = location.latitude
                                 longitude = location.longitude
+                                retrievedLocation = true
                                 locationManager.removeUpdates(this)
                             }
 
@@ -178,6 +188,7 @@ class MainActivity : AppCompatActivity() {
                     if (location != null && location.time > Calendar.getInstance().timeInMillis - 2 * 60 * 100){
                         latitude = location.latitude
                         longitude = location.longitude
+                        retrievedLocation = true
 
                     }
                     else {
@@ -210,8 +221,16 @@ class MainActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
+            R.id.celsiusOption -> {
+                celsius = true
+                true
+            }
+            R.id.fahrenheitOption -> {
+                celsius = false
+                true
+            }
+            else ->
+                super.onOptionsItemSelected(item)
         }
     }
 }
