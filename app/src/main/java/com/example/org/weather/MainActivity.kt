@@ -34,6 +34,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
+        getLocationInfo()
+
+        fab.setOnClickListener { view ->
+            helloWorldTextView.text = latitude.toString()
+        }
+    }
+
+    fun getLocationInfo(){
         var locationManager = (getSystemService(Context.LOCATION_SERVICE) as LocationManager)
 
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
@@ -93,9 +102,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        fab.setOnClickListener { view ->
-            helloWorldTextView.text = latitude.toString()
-        }
     }
 
     fun buildAlertNoGps(){
