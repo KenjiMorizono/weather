@@ -7,12 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 
 class weatherDisplayFragment : Fragment() {
-    private var temperature = 0.00f
+    private var temperature = 0.0
     private var tempUnitCelsius = false
     private val tempPrefix = "°"
 
     companion object {
-        fun newInstance(tempVal : Float, celsius : Boolean) : weatherDisplayFragment {
+        fun newInstance(tempVal : Double, celsius : Boolean) : weatherDisplayFragment {
             val displayFrag = weatherDisplayFragment()
             displayFrag.temperature = tempVal
             displayFrag.tempUnitCelsius = celsius
