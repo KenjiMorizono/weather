@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -19,6 +18,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         infoContainer = LocationInfo(this, this)
         infoContainer!!.updateLocationInfo()
+        infoContainer!!.logInfo()
 
         fab.setOnClickListener { view ->
             infoContainer!!.logInfo()
@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == infoContainer!!.getRequestPermissionCode()){
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)){
                 // Permission to use location is granted, do the same thing as if it was already set
-                infoContainer!!.onRequestPermissionAllowed()
+                infoContainer!!.getLocationInfo()
 
             }
         }

@@ -27,7 +27,6 @@ class LocationInfo (context : Context, mainAct : MainActivity){
     private var locationListener = object : LocationListener {
         override fun onLocationChanged(location: Location?) {
             if (location != null){
-
                 latitude = location.latitude
                 longitude = location.longitude
                 locationManager.removeUpdates(this)
@@ -85,11 +84,6 @@ class LocationInfo (context : Context, mainAct : MainActivity){
         catch (e: SecurityException){
             Log.d("ERROR", "Security Exception even after receiving location permission")
         }
-    }
-
-    fun onRequestPermissionAllowed(){
-        getLocationInfo()
-
     }
 
     fun buildAlertNoGps(){
