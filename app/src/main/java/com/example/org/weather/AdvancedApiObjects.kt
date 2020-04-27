@@ -15,5 +15,10 @@ class RealTimeStats {
     val wind_direction : ApiDouble = ApiDouble()
     val precipitation : ApiDouble = ApiDouble()
     val precipitation_type : ApiString = ApiString()
+    val cloud_cover : ApiDouble = ApiDouble()
+    val fire_index : ApiDouble = ApiDouble()
+    val sunrise : ApiDate = ApiDate()
+    val sunset : ApiDate = ApiDate()
+    val weather_code : ApiString = ApiString()
     val observation_time: ApiDate = ApiDate()
 }
