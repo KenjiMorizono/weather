@@ -29,18 +29,93 @@ class MainActivity : AppCompatActivity() {
     private var celsius = false
     private var retrievedLocation = false
 
+    private var locationManager : LocationManager? = null
+    private val REQUEST_LOCATION: Int = 1
+
+    //define the listener
+    private val locationListener: LocationListener = object : LocationListener {
+        override fun onLocationChanged(location: Location) {
+            Log.d("location:", location.latitude.toString() + " " + location.longitude.toString())
+            retrievedLocation = true
+        }
+        override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
+        override fun onProviderEnabled(provider: String) {}
+        override fun onProviderDisabled(provider: String) {}
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        getLocationInfo()
+
+        // if we do not have location permission, request it
+        // otherwise just enable location updates
+        if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            this.requestPermissions(Manifest.permission.ACCESS_FINE_LOCATION, this.REQUEST_LOCATION)
+        }
+        else
+        {
+            this.enableLocationUpdates()
+        }
 
         fab.setOnClickListener { view ->
 
         }
     }
 
-    fun getLocationInfo(){
+    fun requestPermissions(permission: String, requestInt: Int)
+    {
+        // Permission is not granted
+        // Should we show an explanation?
+        //if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
+
+        // Show an explanation to the user *asynchronously* -- don't block
+        // this thread waiting for the user's response! After the user
+        // sees the explanation, try again to request the permission.
+        //} else {
+        // No explanation needed, we can request the permission.
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(permission),
+            requestInt
+        )
+
+        // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+        // app-defined int constant. The callback method gets the
+        // result of the request.
+        //}
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>, grantResults: IntArray) {
+        when (requestCode) {
+            this.REQUEST_LOCATION -> {
+                // If request is cancelled, the result arrays are empty.
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    this.enableLocationUpdates()
+                }
+                return
+            }
+            else -> {
+                // Ignore all other requests.
+            }
+        }
+    }
+
+    fun enableLocationUpdates() {
+        locationManager = (getSystemService(Context.LOCATION_SERVICE) as LocationManager)
+
+        try {
+            // Request location updates
+            locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60000L, 0f, this.locationListener)
+        } catch(ex: SecurityException) {
+            Log.d("myTag", "Security Exception, no location available")
+        }
+    }
+
+    /*fun getLocationInfo(){
         var locationManager = (getSystemService(Context.LOCATION_SERVICE) as LocationManager)
 
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
@@ -193,7 +268,7 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
-    }
+    }*/
 
     fun getEnteredLocation(zipCode: Int){ // For getting location based on ZIP code entered in entry field
 
