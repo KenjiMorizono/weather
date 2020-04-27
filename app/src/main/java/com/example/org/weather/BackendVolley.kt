@@ -6,6 +6,8 @@ import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
 
+// from https://www.varvet.com/blog/kotlin-with-volley/
+
 class BackendVolley : Application() {
     override fun onCreate() {
         super.onCreate()

@@ -3,6 +3,7 @@ package com.example.org.weather
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
@@ -21,7 +22,11 @@ class MainActivity : AppCompatActivity() {
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
-            var resp = ApiInterfaceRaw.GetRealTimeStats(40.0, 105.0, "us", arrayListOf("precipitation", "precipitation_type", "temp"))
+            var resp = ApiInterface.GetRealTimeStats(40.0, 105.0, "us", arrayListOf("precipitation", "precipitation_type", "temp")) { stats ->
+                if(stats != null){
+                    Log.d("Main Call", stats.observation_time.GetLocalDateTime().toString())
+                }
+            }
         }
     }
 

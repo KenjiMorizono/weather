@@ -13,17 +13,18 @@ class ApiInterfaceRaw {
         val climacellURL = "https://api.climacell.co/v3"
         val realTimeURL = "/weather/realtime?"
 
-        fun GetRealTimeStats(lat: Double, lon: Double, unit: String, fields: List<String>): String? {
+        fun GetRealTimeStats(lat: Double, lon: Double, unit: String, fields: List<String>, completionHandler: (response: String?) -> Unit) {
 
             val path = "${realTimeURL}lat=${lat}&lon=${lon}&unit_system=${unit}&fields=${fields.joinToString(",")}"
 
             var str: String? = null
             ApiInterfaceRaw.get(path) { response ->
-                str = response
+                Log.d("ApiInterfaceRaw", response)
+                completionHandler(response)
             }
-
-            return str
         }
+
+        // from https://www.varvet.com/blog/kotlin-with-volley/
 
         fun get(path: String, completionHandler: (response: String?) -> Unit) {
             val stringReq = object : StringRequest(Method.GET, climacellURL + path,
