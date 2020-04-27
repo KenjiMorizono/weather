@@ -29,6 +29,8 @@ class LocationInfo (context : Context, mainAct : MainActivity){
             if (location != null){
                 latitude = location.latitude
                 longitude = location.longitude
+                //TODO get tempVal from API
+                mAct.supportFragmentManager.beginTransaction().replace(R.id.fragContainer, weatherDisplayFragment.newInstance(0.0, false)).commit()
                 locationManager.removeUpdates(this)
             }
 
@@ -74,6 +76,8 @@ class LocationInfo (context : Context, mainAct : MainActivity){
             if (location != null && location.time > Calendar.getInstance().timeInMillis - 2 * 60 * 100){
                 latitude = location.latitude
                 longitude = location.longitude
+                //TODO get tempVal from API
+                mAct.supportFragmentManager.beginTransaction().replace(R.id.fragContainer, weatherDisplayFragment.newInstance(0.0, false)).commit()
 
             }
             else {

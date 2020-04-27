@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import kotlinx.android.synthetic.main.fragment_weather_display.*
 
 class weatherDisplayFragment : Fragment() {
     private var temperature = 0.0
@@ -30,6 +31,17 @@ class weatherDisplayFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        updateTemperature()
+    }
+
+    fun updateTemperature(){
+        if (tempUnitCelsius){
+            temperatureText.text = temperature.toString() + tempPrefix + "C"
+        }
+        else {
+            temperatureText.text = temperature.toString() + tempPrefix + "F"
+
+        }
     }
 
 }
