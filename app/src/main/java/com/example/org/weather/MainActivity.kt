@@ -12,25 +12,10 @@ class MainActivity : AppCompatActivity() {
     private var celsius = false
     private var infoContainer : LocationInfo? = null
 
-    private var locationManager : LocationManager? = null
-    private val REQUEST_LOCATION: Int = 1
-
-    //define the listener
-    private val locationListener: LocationListener = object : LocationListener {
-        override fun onLocationChanged(location: Location) {
-            Log.d("location:", location.latitude.toString() + " " + location.longitude.toString())
-            retrievedLocation = true
-        }
-        override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
-        override fun onProviderEnabled(provider: String) {}
-        override fun onProviderDisabled(provider: String) {}
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        fix-global-variable-update-issues
         infoContainer = LocationInfo(this, this)
         infoContainer!!.updateLocationInfo()
         infoContainer!!.logInfo()
@@ -49,7 +34,7 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
-    }*/
+    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
