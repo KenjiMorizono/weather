@@ -1,10 +1,13 @@
 package com.example.org.weather
-
+import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
+import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import androidx.core.app.ActivityCompat
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -21,11 +24,16 @@ class MainActivity : AppCompatActivity() {
         infoContainer!!.logInfo()
 
         fab.setOnClickListener { view ->
-            infoContainer!!.logInfo()
-
+            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show()
+            var resp = ApiInterface.GetRealTimeStats(40.0, 105.0, "us") { stats ->
+                if(stats != null){
+                    Log.d("Main Call", stats.observation_time.GetLocalDateTime().toString())
+                }
+            }
         }
-    }
-  
+      infoContainer!!.logInfo()
+    } 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray){
         if (requestCode == infoContainer!!.getRequestPermissionCode()){
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)){
@@ -35,6 +43,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
