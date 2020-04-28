@@ -20,6 +20,7 @@ class LocationInfo (context : Context, mainAct : MainActivity){
 
     private var latitude = -1.0
     private var longitude = -1.0
+    private var temperature = -1.0
     private var mContext = context
     private var mAct = mainAct
     private val REQUEST_PERMISSION_LOCATION = 255
