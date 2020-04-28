@@ -16,10 +16,9 @@ class ApiInterfaceRaw {
         fun GetRealTimeStats(lat: Double, lon: Double, unit: String, fields: List<String>, completionHandler: (response: String?) -> Unit) {
 
             val path = "${realTimeURL}lat=${lat}&lon=${lon}&unit_system=${unit}&fields=${fields.joinToString(",")}"
-
             var str: String? = null
             ApiInterfaceRaw.get(path) { response ->
-                Log.d("ApiInterfaceRaw", response)
+                Log.d("ApiInterfaceRaw", response + "")
                 completionHandler(response)
             }
         }

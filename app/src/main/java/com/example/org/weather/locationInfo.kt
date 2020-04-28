@@ -18,23 +18,27 @@ import java.util.*
 class LocationInfo (context : Context, mainAct : MainActivity){
     // https://stackoverflow.com/questions/1513485/how-do-i-get-the-current-gps-location-programmatically-in-android
 
-    private var latitude = -1.0
-    private var longitude = -1.0
-    private var temperature = -1.0
+    private var latitude = 0.0
+    private var longitude = 0.0
+    private var temperature = 0.0
+    private var unitsCelsius = false
     private var mContext = context
     private var mAct = mainAct
     private val REQUEST_PERMISSION_LOCATION = 255
     private var locationManager = (mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager)
     private var locationListener = object : LocationListener {
         override fun onLocationChanged(location: Location?) {
-            if (location != null){
-                latitude = location.latitude
-                longitude = location.longitude
-                //TODO get tempVal from API
-                mAct.supportFragmentManager.beginTransaction().replace(R.id.fragContainer, weatherDisplayFragment.newInstance(0.0, false)).commit()
-                locationManager.removeUpdates(this)
-            }
+            if (location != null) {
+                    latitude = location.latitude
+                    longitude = location.longitude
 
+                locationManager.removeUpdates(this)
+                mAct.supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragContainer, weatherDisplayFragment.newInstance(temperature, unitsCelsius))
+                    .commit()
+
+
+            }
         }
 
         override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?){

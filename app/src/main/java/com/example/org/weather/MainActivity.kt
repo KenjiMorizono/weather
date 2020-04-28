@@ -1,4 +1,5 @@
 package com.example.org.weather
+
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -8,7 +9,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import androidx.core.app.ActivityCompat
+
 import kotlinx.android.synthetic.main.activity_main.*
+
 
 class MainActivity : AppCompatActivity() {
     // https://stackoverflow.com/questions/1513485/how-do-i-get-the-current-gps-location-programmatically-in-android
