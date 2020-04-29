@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
-            var resp = ApiInterface.GetRealTimeStats(40.0, 105.0, "us") { stats ->
+            var resp = ApiInterface.GetRealTimeStats(40.0, 105.0, true) { stats ->
                 if(stats != null){
                     Log.d("Main Call", stats.observation_time.GetLocalDateTime().toString())
                 }
