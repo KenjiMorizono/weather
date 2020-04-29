@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     // https://stackoverflow.com/questions/1513485/how-do-i-get-the-current-gps-location-programmatically-in-android
-    private var celsius = false
+    private var useFahrenheit = false
     private var infoContainer : LocationInfo? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,11 +60,11 @@ class MainActivity : AppCompatActivity() {
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.celsiusOption -> {
-                celsius = true
+                infoContainer!!.setUseFahrenheit(false)
                 true
             }
             R.id.fahrenheitOption -> {
-                celsius = false
+                infoContainer!!.setUseFahrenheit(true)
                 true
             }
             else ->

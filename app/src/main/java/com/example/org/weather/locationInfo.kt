@@ -21,7 +21,8 @@ class LocationInfo (context : Context, mainAct : MainActivity){
     private var latitude = 0.0
     private var longitude = 0.0
     private var temperature = 0.0
-    private var unitsCelsius = false
+    private var humidity = 0.0
+    private var tempUnitFahrenheit = true
     private var mContext = context
     private var mAct = mainAct
     private val REQUEST_PERMISSION_LOCATION = 255
@@ -31,12 +32,17 @@ class LocationInfo (context : Context, mainAct : MainActivity){
             if (location != null) {
                     latitude = location.latitude
                     longitude = location.longitude
-
-                locationManager.removeUpdates(this)
-                mAct.supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragContainer, weatherDisplayFragment.newInstance(temperature, unitsCelsius))
-                    .commit()
-
+                var resp = ApiInterface.GetRealTimeStats(latitude, longitude, tempUnitFahrenheit) { stats ->
+                    if(stats != null){
+                        this@LocationInfo.temperature = stats.temp.value!!
+                        this@LocationInfo.humidity = stats.humidity.value!!
+                        Log.d("temp", temperature.toString())
+                        locationManager.removeUpdates(this)
+                        mAct.supportFragmentManager.beginTransaction()
+                            .replace(R.id.fragContainer, weatherDisplayFragment.newInstance(this@LocationInfo))
+                            .commit()
+                    }
+                }
 
             }
         }
@@ -81,8 +87,17 @@ class LocationInfo (context : Context, mainAct : MainActivity){
             if (location != null && location.time > Calendar.getInstance().timeInMillis - 2 * 60 * 100){
                 latitude = location.latitude
                 longitude = location.longitude
-                //TODO get tempVal from API
-                mAct.supportFragmentManager.beginTransaction().replace(R.id.fragContainer, weatherDisplayFragment.newInstance(0.0, false)).commit()
+                var resp = ApiInterface.GetRealTimeStats(latitude, longitude, tempUnitFahrenheit) { stats ->
+                    if(stats != null){
+                        this@LocationInfo.temperature = stats.temp.value!!
+                        this@LocationInfo.humidity = stats.humidity.value!!
+                        Log.d("temp", temperature.toString())
+                        mAct.supportFragmentManager.beginTransaction()
+                            .replace(R.id.fragContainer, weatherDisplayFragment.newInstance(this@LocationInfo))
+                            .commit()
+                    }
+                }
+
 
             }
             else {
@@ -150,8 +165,37 @@ class LocationInfo (context : Context, mainAct : MainActivity){
         return longitude
     }
 
+    fun getTemperature() : Double{
+
+        return temperature
+    }
+
+    fun getUnitBoolean() : Boolean {
+
+        return tempUnitFahrenheit
+    }
+
+    fun getHumidity() : Double {
+
+        return humidity
+    }
+
     fun getRequestPermissionCode() : Int{
 
         return REQUEST_PERMISSION_LOCATION
+    }
+
+    fun setUseFahrenheit(bool : Boolean){
+        this@LocationInfo.tempUnitFahrenheit = bool
+        var resp = ApiInterface.GetRealTimeStats(latitude, longitude, tempUnitFahrenheit) { stats ->
+            if(stats != null){
+                this@LocationInfo.temperature = stats.temp.value!!
+                this@LocationInfo.humidity = stats.humidity.value!!
+                Log.d("temp", temperature.toString())
+                mAct.supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragContainer, weatherDisplayFragment.newInstance(this@LocationInfo))
+                    .commit()
+            }
+        }
     }
 }

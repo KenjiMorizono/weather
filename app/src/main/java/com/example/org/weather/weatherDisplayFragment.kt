@@ -8,15 +8,17 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_weather_display.*
 
 class weatherDisplayFragment : Fragment() {
+    private var info : LocationInfo? = null
     private var temperature = 0.0
-    private var tempUnitCelsius = false
-    private val tempPrefix = "°"
+    private var latitude = 0.0
+    private var longitude = 0.0
+    private var humidity = 0.0
+    private var tempPrefix = "°"
 
     companion object {
-        fun newInstance(tempVal : Double, celsius : Boolean) : weatherDisplayFragment {
+        fun newInstance(locationInfo : LocationInfo) : weatherDisplayFragment {
             val displayFrag = weatherDisplayFragment()
-            displayFrag.temperature = tempVal
-            displayFrag.tempUnitCelsius = celsius
+            displayFrag.info = locationInfo
             return displayFrag
         }
     }
@@ -31,17 +33,24 @@ class weatherDisplayFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        updateTemperature()
+        this@weatherDisplayFragment.temperature = info!!.getTemperature()
+        this@weatherDisplayFragment.latitude = info!!.getLatitude()
+        this@weatherDisplayFragment.longitude = info!!.getLongitude()
+        this@weatherDisplayFragment.humidity = info!!.getHumidity()
+        updateDisplay()
     }
 
-    fun updateTemperature(){
-        if (tempUnitCelsius){
-            temperatureText.text = temperature.toString() + tempPrefix + "C"
-        }
-        else {
+    fun updateDisplay(){
+        if (this@weatherDisplayFragment.info!!.getUnitBoolean()){
             temperatureText.text = temperature.toString() + tempPrefix + "F"
 
         }
+        else {
+            temperatureText.text = temperature.toString() + tempPrefix + "C"
+
+        }
+        latitudeLongitudeText.text = "(" + latitude.toString() + ", " + longitude.toString() + ")"
+        humidityText.text = "Humidity: " + humidity.toString() + "%"
     }
 
 }

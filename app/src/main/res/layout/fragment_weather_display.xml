@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".weatherDisplayFragment" >
+    tools:context=".weatherDisplayFragment">
 
     <ImageView
         android:id="@+id/weatherIconPlaceholder"
@@ -18,20 +18,21 @@
         tools:src="@tools:sample/backgrounds/scenic[1]" />
 
     <TextView
-        android:id="@+id/cityStateText"
-        android:layout_width="wrap_content"
+        android:id="@+id/latitudeLongitudeText"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="Aurora, CO"
+        android:text="(LAT, LON)"
+        android:textAlignment="center"
         android:textColor="@android:color/black"
-        android:textSize="24sp"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/weatherIconPlaceholder" />
 
     <TextView
         android:id="@+id/temperatureText"
-        android:layout_width="0dp"
+        android:layout_width="411dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:gravity="center_vertical"
@@ -41,5 +42,19 @@
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cityStateText" />
+        app:layout_constraintTop_toBottomOf="@+id/latitudeLongitudeText" />
+
+    <TextView
+        android:id="@+id/humidityText"
+        android:layout_width="411dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center_vertical"
+        android:text="TextView"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/temperatureText" />
 </androidx.constraintlayout.widget.ConstraintLayout>
