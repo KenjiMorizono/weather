@@ -8,7 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import androidx.core.app.ActivityCompat
+import androidx.core.graphics.scale
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.content_main.*
+import java.time.LocalDateTime
 
 class MainActivity : AppCompatActivity() {
     // https://stackoverflow.com/questions/1513485/how-do-i-get-the-current-gps-location-programmatically-in-android
@@ -26,9 +29,40 @@ class MainActivity : AppCompatActivity() {
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
-            var resp = ApiInterface.GetRealTimeStats(40.0, 105.0, true) { stats ->
+
+            ApiInterface.GetRealTimeStats(40.0f, -105.0f, true) { stats ->
                 if(stats != null){
                     Log.d("Main Call", stats.observation_time.GetLocalDateTime().toString())
+                }
+            }
+
+            ApiInterface.GetHistoricalStats(40.0f, -105.0f, true, 60, LocalDateTime.now().minusHours(7)) { statsList ->
+                if(statsList != null){
+                    Log.d("Main Call", statsList[0]!!.observation_time.GetLocalDateTime().toString())
+                }
+            }
+
+            ApiInterface.GetNowcastStats(40.0f, -105.0f, true, 60, LocalDateTime.now().plusHours(6)) { statsList ->
+                if(statsList != null){
+                    Log.d("Main Call", statsList[0]!!.observation_time.GetLocalDateTime().toString())
+                }
+            }
+
+            ApiInterface.GetHourlyStats(40.0f, -105.0f, true, 100) { statsList ->
+                if(statsList != null){
+                    Log.d("Main Call", statsList[0]!!.observation_time.GetLocalDateTime().toString())
+                }
+            }
+
+            ApiInterface.GetDailyStats(40.0f, -105.0f, true, 14) { statsList ->
+                if(statsList != null){
+                    Log.d("Main Call", statsList[0]!!.temp[0].GetMinOrMax()!!.value.toString())
+                }
+            }
+
+            ApiInterface.GetLayerPNG("precipitation", 1, 0, 0, "us") { bitmap ->
+                if(bitmap != null){
+                    this.image_view_bitmap.setImageBitmap(bitmap.scale(1000, 1000))
                 }
             }
         }
