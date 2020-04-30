@@ -1,6 +1,8 @@
 package com.example.org.weather
 
 import android.Manifest
+import android.content.SharedPreferences
+import androidx.preference.PreferenceManager
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -9,20 +11,23 @@ import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import androidx.core.app.ActivityCompat
-
 import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity() {
     // https://stackoverflow.com/questions/1513485/how-do-i-get-the-current-gps-location-programmatically-in-android
-    private var celsius = false
     private var infoContainer : LocationInfo? = null
+    private var preferences : SharedPreferences? = null
+    private val prefName = "PREFS"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        infoContainer = LocationInfo(this, this)
+        preferences = PreferenceManager.getDefaultSharedPreferences(this)
+        infoContainer = LocationInfo(this, this, loadUnitPreferenceFromFile())
+
+
         infoContainer!!.updateLocationInfo()
         infoContainer!!.logInfo()
 
@@ -35,8 +40,13 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-      infoContainer!!.logInfo()
-    } 
+    }
+
+    override fun onStop() {
+        super.onStop()
+        saveUnitPreferenceToFile()
+    }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray){
         if (requestCode == infoContainer!!.getRequestPermissionCode()){
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)){
@@ -46,7 +56,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -60,15 +69,30 @@ class MainActivity : AppCompatActivity() {
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.celsiusOption -> {
-                celsius = true
+                infoContainer!!.setUseFahrenheit(false)
                 true
             }
             R.id.fahrenheitOption -> {
-                celsius = false
+                infoContainer!!.setUseFahrenheit(true)
                 true
             }
             else ->
                 super.onOptionsItemSelected(item)
         }
+    }
+
+    fun saveUnitPreferenceToFile(){
+        var unitPrefUs = infoContainer!!.getUnitBoolean()
+        val editor = preferences!!.edit()
+        editor.putBoolean(prefName, unitPrefUs)
+        editor.apply()
+
+    }
+
+    fun loadUnitPreferenceFromFile() : Boolean{
+        var unitPrefUs = preferences!!.getBoolean(prefName, true)
+        Log.d("unitPrefUS", unitPrefUs.toString())
+
+        return unitPrefUs
     }
 }
