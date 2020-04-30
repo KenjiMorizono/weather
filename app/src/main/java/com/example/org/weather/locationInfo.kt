@@ -12,22 +12,24 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
-import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat.requestPermissions
 import java.util.*
 
-class LocationInfo (context : Context, mainAct : MainActivity){
+class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boolean){
     // https://stackoverflow.com/questions/1513485/how-do-i-get-the-current-gps-location-programmatically-in-android
 
     private var latitude = 0.0
     private var longitude = 0.0
     private var temperature = 0.0
     private var humidity = 0.0
-    private var tempUnitFahrenheit = true
+    private var tempUnitFahrenheit = unitBoolean
     private var mContext = context
     private var mAct = mainAct
     private val REQUEST_PERMISSION_LOCATION = 255
     private var locationManager = (mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager)
+
     private var locationListener = object : LocationListener {
+
         override fun onLocationChanged(location: Location?) {
             if (location != null) {
                     latitude = location.latitude
@@ -63,6 +65,7 @@ class LocationInfo (context : Context, mainAct : MainActivity){
 
     fun updateLocationInfo(){
         var gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        Log.d("INFO", "GPS is " + gpsEnabled.toString())
 
         if (!gpsEnabled){
             Log.i("WARNING", "GPS NOT AVAILABLE REQUESTING GPS ENABLE...")
@@ -72,7 +75,7 @@ class LocationInfo (context : Context, mainAct : MainActivity){
 
         if (gpsEnabled){
             if (!checkPermissions(locationManager)){
-                requestPermissions()
+                getPermission()
             }
             else {
                 getLocationInfo()
@@ -140,8 +143,8 @@ class LocationInfo (context : Context, mainAct : MainActivity){
         return false
     }
 
-    private fun requestPermissions(){
-        ActivityCompat.requestPermissions(
+    private fun getPermission(){
+        requestPermissions(
             mAct,
             arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
             REQUEST_PERMISSION_LOCATION
