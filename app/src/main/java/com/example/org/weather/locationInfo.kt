@@ -13,6 +13,7 @@ import android.provider.Settings
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat.requestPermissions
+import android.location.Geocoder
 import java.util.*
 
 class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boolean){
@@ -25,6 +26,9 @@ class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boo
     private var tempUnitFahrenheit = unitBoolean
     private var mContext = context
     private var mAct = mainAct
+    private var city = ""
+    private var state = ""
+    private var postalCode = ""
     private val REQUEST_PERMISSION_LOCATION = 255
     private var locationManager = (mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager)
 
@@ -32,8 +36,15 @@ class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boo
 
         override fun onLocationChanged(location: Location?) {
             if (location != null) {
-                    latitude = location.latitude
-                    longitude = location.longitude
+                latitude = location.latitude
+                longitude = location.longitude
+
+                var geo = Geocoder(mAct)
+                var addressInfo = geo.getFromLocation(latitude, longitude, 1)[0]
+
+                city = addressInfo.locality
+                state = addressInfo.adminArea
+                postalCode = addressInfo.postalCode
                 var resp = ApiInterface.GetRealTimeStats(latitude, longitude, tempUnitFahrenheit) { stats ->
                     if(stats != null){
                         this@LocationInfo.temperature = stats.temp.value!!
@@ -186,6 +197,36 @@ class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boo
     fun getRequestPermissionCode() : Int{
 
         return REQUEST_PERMISSION_LOCATION
+    }
+
+    fun setCity(city : String){
+
+        this.city = city
+    }
+
+    fun getCity() : String {
+
+        return city
+    }
+
+    fun setState(state : String){
+
+        this.state = state
+    }
+
+    fun getState() : String {
+
+        return state
+    }
+
+    fun setPostalCode(postalCode : String){
+
+        this.postalCode = postalCode
+    }
+
+    fun getPostalCode() : String{
+
+        return postalCode
     }
 
     fun setUseFahrenheit(bool : Boolean){

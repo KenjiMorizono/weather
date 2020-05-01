@@ -13,7 +13,10 @@ class weatherDisplayFragment : Fragment() {
     private var latitude = 0.0
     private var longitude = 0.0
     private var humidity = 0.0
-    private var tempPrefix = "°"
+    private var city = ""
+    private var state = ""
+    private var postal = ""
+    private val tempPrefix = "°"
 
     companion object {
         fun newInstance(locationInfo : LocationInfo) : weatherDisplayFragment {
@@ -37,6 +40,9 @@ class weatherDisplayFragment : Fragment() {
         this@weatherDisplayFragment.latitude = info!!.getLatitude()
         this@weatherDisplayFragment.longitude = info!!.getLongitude()
         this@weatherDisplayFragment.humidity = info!!.getHumidity()
+        this@weatherDisplayFragment.city = info!!.getCity()
+        this@weatherDisplayFragment.state = info!!.getState()
+        this@weatherDisplayFragment.postal = info!!.getPostalCode()
         updateDisplay()
     }
 
@@ -49,7 +55,7 @@ class weatherDisplayFragment : Fragment() {
             temperatureText.text = temperature.toString() + tempPrefix + "C"
 
         }
-        locationText.text = "(" + latitude.toString() + ", " + longitude.toString() + ")"
+        locationText.text = city + " " + state + ", " + postal
         humidityText.text = "Humidity: " + humidity.toString() + "%"
     }
 

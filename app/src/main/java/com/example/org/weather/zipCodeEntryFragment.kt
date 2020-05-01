@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.location.Geocoder
 import android.util.Log
 import android.view.Menu
-import kotlinx.android.synthetic.main.fragment_weather_display.*
 import kotlinx.android.synthetic.main.fragment_zip_code_entry.*
 
 class zipCodeEntryFragment : Fragment() {
@@ -47,6 +46,12 @@ class zipCodeEntryFragment : Fragment() {
         zipCodeSubmitButton.setOnClickListener {
             var address = geo.getFromLocationName(zipCodeEditText.text.toString(), 1)[0]
             Log.d("Address: ", address.toString())
+            info!!.setCity(address.locality)
+            info!!.setState(address.adminArea)
+            info!!.setPostalCode(address.postalCode)
+            var act = activity as MainActivity
+            act.supportFragmentManager.beginTransaction().replace(R.id.fragContainer, weatherDisplayFragment.newInstance(info!!)).commit()
+
         }
 
         cancelButton.setOnClickListener {
