@@ -49,7 +49,7 @@ class weatherDisplayFragment : Fragment() {
             temperatureText.text = temperature.toString() + tempPrefix + "C"
 
         }
-        latitudeLongitudeText.text = "(" + latitude.toString() + ", " + longitude.toString() + ")"
+        locationText.text = "(" + latitude.toString() + ", " + longitude.toString() + ")"
         humidityText.text = "Humidity: " + humidity.toString() + "%"
     }
 

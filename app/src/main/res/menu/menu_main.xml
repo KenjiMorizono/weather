@@ -3,6 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.org.weather.MainActivity">
     <item
+        android:id="@+id/zipCodeEntryOption"
+        android:title="Zip Code"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/celsiusOption"
         android:orderInCategory="1"
         android:title="Celsius"

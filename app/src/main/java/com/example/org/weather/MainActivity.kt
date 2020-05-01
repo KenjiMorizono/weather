@@ -76,6 +76,10 @@ class MainActivity : AppCompatActivity() {
                 infoContainer!!.setUseFahrenheit(true)
                 true
             }
+            R.id.zipCodeEntryOption -> {
+                supportFragmentManager.beginTransaction().replace(R.id.fragContainer, zipCodeEntryFragment.newInstance(infoContainer!!)).commit()
+                true
+            }
             else ->
                 super.onOptionsItemSelected(item)
         }
