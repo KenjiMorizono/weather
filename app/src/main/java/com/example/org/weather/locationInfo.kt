@@ -5,15 +5,12 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
+import android.location.*
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat.requestPermissions
-import android.location.Geocoder
 import java.util.*
 
 class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boolean){
@@ -26,9 +23,7 @@ class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boo
     private var tempUnitFahrenheit = unitBoolean
     private var mContext = context
     private var mAct = mainAct
-    private var city = ""
-    private var state = ""
-    private var postalCode = ""
+    private var locationDescription : Address? = null
     private val REQUEST_PERMISSION_LOCATION = 255
     private var locationManager = (mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager)
 
@@ -40,11 +35,9 @@ class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boo
                 longitude = location.longitude
 
                 var geo = Geocoder(mAct)
-                var addressInfo = geo.getFromLocation(latitude, longitude, 1)[0]
+                locationDescription = geo.getFromLocation(latitude, longitude, 1)[0]
+                Log.d("ADDRESS", locationDescription.toString())
 
-                city = addressInfo.locality
-                state = addressInfo.adminArea
-                postalCode = addressInfo.postalCode
                 var resp = ApiInterface.GetRealTimeStats(latitude, longitude, tempUnitFahrenheit) { stats ->
                     if(stats != null){
                         this@LocationInfo.temperature = stats.temp.value!!
@@ -198,35 +191,14 @@ class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boo
 
         return REQUEST_PERMISSION_LOCATION
     }
+    fun setLocationDescription(addressInfo : Address){
 
-    fun setCity(city : String){
-
-        this.city = city
+        this.locationDescription = addressInfo
     }
 
-    fun getCity() : String {
+    fun getLocationDescription() : Address{
 
-        return city
-    }
-
-    fun setState(state : String){
-
-        this.state = state
-    }
-
-    fun getState() : String {
-
-        return state
-    }
-
-    fun setPostalCode(postalCode : String){
-
-        this.postalCode = postalCode
-    }
-
-    fun getPostalCode() : String{
-
-        return postalCode
+        return locationDescription!!
     }
 
     fun setUseFahrenheit(bool : Boolean){

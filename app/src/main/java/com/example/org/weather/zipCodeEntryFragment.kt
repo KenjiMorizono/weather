@@ -46,9 +46,7 @@ class zipCodeEntryFragment : Fragment() {
         zipCodeSubmitButton.setOnClickListener {
             var address = geo.getFromLocationName(zipCodeEditText.text.toString(), 1)[0]
             Log.d("Address: ", address.toString())
-            info!!.setCity(address.locality)
-            info!!.setState(address.adminArea)
-            info!!.setPostalCode(address.postalCode)
+            info!!.setLocationDescription(address)
             var act = activity as MainActivity
             act.supportFragmentManager.beginTransaction().replace(R.id.fragContainer, weatherDisplayFragment.newInstance(info!!)).commit()
 
