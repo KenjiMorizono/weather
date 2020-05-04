@@ -60,14 +60,14 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            ApiInterface.GetLayerPNG("precipitation", 1, 0, 0, "us") { bitmap ->
+            ApiInterface.GetLayerPNG(40.0f, -105.0f,1, "precipitation", "global") { bitmap ->
                 if(bitmap != null){
-                    this.image_view_bitmap.setImageBitmap(bitmap.scale(1000, 1000))
+                    this.image_view_bitmap.setImageBitmap(bitmap)
                 }
             }
         }
       infoContainer!!.logInfo()
-    } 
+    }
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray){
         if (requestCode == infoContainer!!.getRequestPermissionCode()){
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)){

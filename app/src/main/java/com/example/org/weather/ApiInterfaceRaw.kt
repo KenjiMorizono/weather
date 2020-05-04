@@ -21,6 +21,7 @@ class ApiInterfaceRaw {
         val hourlyForcastURL = "/weather/forecast/hourly?"
         val dailyForcastURL = "/weather/forecast/daily?"
         val layersURL = "/weather/layers"
+        val backgroundURL = "https://a.tile.openstreetmap.org"
 
         fun GetRealTimeStats(lat: Float, lon: Float, unit: String, fields: List<String>, completionHandler: (response: String?) -> Unit) {
 
@@ -82,6 +83,15 @@ class ApiInterfaceRaw {
             }
         }
 
+        fun GetBackgroundPNG(zoom: Int, x: Int, y: Int, completionHandler: (response: Bitmap?) -> Unit) {
+            val path = "/${zoom}/${x}/${y}.png"
+
+            ApiInterfaceRaw.getBkgPNG(path) { response ->
+                Log.d("ApiInterfaceRaw", response!!.byteCount.toString())
+                completionHandler(response)
+            }
+        }
+
         // from https://www.varvet.com/blog/kotlin-with-volley/
         fun get(path: String, completionHandler: (response: String?) -> Unit) {
             val stringReq = object : StringRequest(Method.GET, climacellURL + path,
@@ -121,6 +131,29 @@ class ApiInterfaceRaw {
                     val headers = HashMap<String, String>()
                     headers.put("accept", "image/png")
                     headers.put("apikey", apikey)
+                    return headers
+                }
+            }
+
+            BackendVolley.instance?.addToRequestQueue(stringReq, TAG)
+        }
+
+        fun getBkgPNG(path: String, completionHandler: (response: Bitmap?) -> Unit) {
+            val stringReq = object : ImageRequest(
+                backgroundURL + path,
+                Response.Listener<Bitmap?> { response ->
+                    Log.d(TAG, "/post request OK! Response: $response")
+                    completionHandler(response)
+                }, 1000, 1000, ImageView.ScaleType.FIT_XY, Bitmap.Config.ALPHA_8,
+                Response.ErrorListener { error ->
+                    VolleyLog.e(TAG, "/post request fail! Error: ${error.message}")
+                    completionHandler(null)
+                }) {
+                @Throws(AuthFailureError::class)
+                override fun getHeaders(): Map<String, String> {
+                    val headers = HashMap<String, String>()
+                    headers.put("accept", "image/png")
+                    //headers.put("apikey", apikey)
                     return headers
                 }
             }

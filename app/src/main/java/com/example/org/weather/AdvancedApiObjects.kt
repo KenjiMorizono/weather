@@ -12,7 +12,7 @@ class TimeStats {
     val wind_speed : ApiFloat = ApiFloat()
     val visibility : ApiFloat = ApiFloat()
     val humidity : ApiFloat = ApiFloat()
-    val wind_direction : ApiFloat = ApiFloat()
+    val wind_direction : ApiInt = ApiInt()
     val precipitation : ApiFloat = ApiFloat()
     val precipitation_type : ApiString = ApiString()
     val cloud_cover : ApiFloat = ApiFloat()

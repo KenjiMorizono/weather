@@ -6,8 +6,24 @@ import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
 
 class ApiInt {
-    val value : Int? = 0
+    val value : String? = ""
     val units : String? = ""
+
+    fun TryGetInt() : Int? {
+        var intVal : Int? = null
+        try{
+            if(this.value != null) {
+                intVal = this.value.toInt()
+            }
+            else
+            {
+                return null
+            }
+        }
+        catch (e : Exception) { return null }
+
+        return intVal
+    }
 }
 
 class ApiFloat {

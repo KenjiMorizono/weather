@@ -2,6 +2,8 @@ package com.example.org.weather
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Matrix
 import android.util.Base64
 import android.util.Log
 import com.google.gson.Gson
@@ -9,6 +11,10 @@ import com.google.gson.reflect.TypeToken
 import java.lang.Exception
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.math.PI
+import kotlin.math.asinh
+import kotlin.math.floor
+import kotlin.math.tan
 
 class ApiInterface {
     companion object {
@@ -91,7 +97,7 @@ class ApiInterface {
                 "si"
             }
 
-            // make sure that the earliest they go is 100 hours ahead from now
+            // make sure that the earliest they go is 96 hours ahead from now
 
             var hoursToAdd : Long = 96
             if(hoursAhead < 96) {
@@ -149,27 +155,38 @@ class ApiInterface {
             }
         }
 
-        fun GetLayerPNG(type: String, zoom: Int, x: Int, y: Int, region: String, completionHandler: (response: Bitmap?) -> Unit) {
-
-            ApiInterfaceRaw.GetLayerPNG(type, zoom, x, y, region){ response ->
-                /*var i = 0
-                while (i < response!!.length)
-                {
-                    try {
-                        var response1 = response!!.substring(i)
-                        var decodedString : ByteArray = Base64.decode(response1, Base64.DEFAULT)
-                        //var decodedString : ByteArray = response!!.toByteArray()
-                        var png : Bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
-                        var j = 0
-                    }
-                    catch (e : Exception) { i++ }
+        fun GetLayerPNG(lat: Float, lon: Float, zoom: Int, type: String, region: String, completionHandler: (response: Bitmap?) -> Unit) {
+            var xyPair = ApiInterface.GetXYTile(lat.toDouble(), lon.toDouble(), zoom)
+            ApiInterfaceRaw.GetBackgroundPNG(zoom, xyPair.first, xyPair.second){ bitmap1 ->
+                ApiInterfaceRaw.GetLayerPNG(type, zoom, xyPair.first, xyPair.second, region){ bitmap2 ->
+                    var bitmapFinal: Bitmap = Bitmap.createBitmap(bitmap1!!.getWidth(), bitmap1.getHeight(), bitmap1.getConfig())
+                    var canvas: Canvas = Canvas(bitmapFinal)
+                    canvas.drawBitmap(bitmap1, Matrix(), null)
+                    canvas.drawBitmap(bitmap2!!, Matrix(), null)
+                    completionHandler(bitmapFinal)
                 }
-
-
-                var statsList = this.gson.fromJson<Array<DailyStats>>(response, TypeToken.getArray(DailyStats::class.java).type)
-                Log.d("ApiInterface", statsList[0].lat.toString())*/
-                completionHandler(response)
             }
+        }
+
+        fun GetXYTile(lat : Double, lon: Double, zoom : Int) : Pair<Int, Int> {
+            val latRad = Math.toRadians(lat)
+            var xtile = floor( (lon + 180) / 360 * (1 shl zoom) ).toInt()
+            var ytile = floor( (1.0 - asinh(tan(latRad)) / PI) / 2 * (1 shl zoom) ).toInt()
+
+            if (xtile < 0) {
+                xtile = 0
+            }
+            if (xtile >= (1 shl zoom)) {
+                xtile= (1 shl zoom) - 1
+            }
+            if (ytile < 0) {
+                ytile = 0
+            }
+            if (ytile >= (1 shl zoom)) {
+                ytile = (1 shl zoom) - 1
+            }
+
+            return Pair(xtile, ytile)
         }
     }
 }
