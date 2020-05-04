@@ -3,10 +3,27 @@ package com.example.org.weather
 import java.lang.Exception
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
 
 class ApiInt {
-    val value : Int? = 0
+    val value : String? = ""
     val units : String? = ""
+
+    fun TryGetInt() : Int? {
+        var intVal : Int? = null
+        try{
+            if(this.value != null) {
+                intVal = this.value.toInt()
+            }
+            else
+            {
+                return null
+            }
+        }
+        catch (e : Exception) { return null }
+
+        return intVal
+    }
 }
 
 class ApiDouble {
@@ -26,9 +43,33 @@ class ApiDate {
         var dateTime : LocalDateTime = LocalDateTime.MIN
         try{
             dateTime = LocalDateTime.parse(this.value, DateTimeFormatter.ISO_DATE_TIME)
+            dateTime = dateTime.minusHours(6)
         }
         catch (e : Exception) { return null }
 
         return dateTime
+    }
+}
+
+class ApiMinMax {
+    private val observation_time : String? = ""
+    private val min : ApiDouble? = null
+    private val max : ApiDouble? = null
+
+    fun GetLocalDateTime() : LocalDateTime? {
+        var dateTime : LocalDateTime = LocalDateTime.MIN
+        try{
+            dateTime = LocalDateTime.parse(this.observation_time, DateTimeFormatter.ISO_DATE_TIME)
+            dateTime = dateTime.minusHours(6)
+        }
+        catch (e : Exception) { return null }
+
+        return dateTime
+    }
+
+    fun GetMinOrMax() : ApiDouble? {
+        if(this.min != null) { return this.min }
+        if(this.max != null) { return this.min }
+        return null
     }
 }
