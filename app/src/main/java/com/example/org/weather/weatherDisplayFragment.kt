@@ -1,5 +1,6 @@
 package com.example.org.weather
 
+import android.location.Address
 import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,7 +14,8 @@ class weatherDisplayFragment : Fragment() {
     private var latitude = 0.0
     private var longitude = 0.0
     private var humidity = 0.0
-    private var tempPrefix = "°"
+    private var addressInfo : Address? = null
+    private val tempPrefix = "°"
 
     companion object {
         fun newInstance(locationInfo : LocationInfo) : weatherDisplayFragment {
@@ -37,6 +39,7 @@ class weatherDisplayFragment : Fragment() {
         this@weatherDisplayFragment.latitude = info!!.getLatitude()
         this@weatherDisplayFragment.longitude = info!!.getLongitude()
         this@weatherDisplayFragment.humidity = info!!.getHumidity()
+        this@weatherDisplayFragment.addressInfo = info!!.getLocationDescription()
         updateDisplay()
     }
 
@@ -49,7 +52,19 @@ class weatherDisplayFragment : Fragment() {
             temperatureText.text = temperature.toString() + tempPrefix + "C"
 
         }
-        latitudeLongitudeText.text = "(" + latitude.toString() + ", " + longitude.toString() + ")"
+        var locationTextForDisplay = ""
+        var addressDisplayArrayMax : Int = addressInfo!!.maxAddressLineIndex
+        for(i in 0 .. addressDisplayArrayMax){
+            if (i == addressDisplayArrayMax - 1){
+                locationTextForDisplay += addressInfo!!.getAddressLine(i)
+            }
+            else {
+                locationTextForDisplay += addressInfo!!.getAddressLine(i) + "\n"
+            }
+
+        }
+
+        locationText.text = locationTextForDisplay
         humidityText.text = "Humidity: " + humidity.toString() + "%"
     }
 

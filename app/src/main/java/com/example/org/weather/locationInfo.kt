@@ -5,9 +5,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
+import android.location.*
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -25,6 +23,7 @@ class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boo
     private var tempUnitFahrenheit = unitBoolean
     private var mContext = context
     private var mAct = mainAct
+    private var locationDescription : Address? = null
     private val REQUEST_PERMISSION_LOCATION = 255
     private var locationManager = (mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager)
 
@@ -32,10 +31,17 @@ class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boo
 
         override fun onLocationChanged(location: Location?) {
             if (location != null) {
-                    latitude = location.latitude
-                    longitude = location.longitude
+                latitude = location.latitude
+                longitude = location.longitude
+
+                var geo = Geocoder(mAct)
+                locationDescription = geo.getFromLocation(latitude, longitude, 1)[0]
+                Log.d("ADDRESS", locationDescription.toString())
+
                 var resp = ApiInterface.GetRealTimeStats(latitude, longitude, tempUnitFahrenheit) { stats ->
+                    Log.d("INSIDE OF RESP", "TEST")
                     if(stats != null){
+                        Log.d("STATS", "NOT NULL")
                         this@LocationInfo.temperature = stats.temp.value!!
                         this@LocationInfo.humidity = stats.humidity.value!!
                         Log.d("temp", temperature.toString())
@@ -104,7 +110,7 @@ class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boo
 
             }
             else {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0L, 0.0f, locationListener)
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0L, 500.0f, locationListener)
             }
 
         }
@@ -186,6 +192,26 @@ class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boo
     fun getRequestPermissionCode() : Int{
 
         return REQUEST_PERMISSION_LOCATION
+    }
+    fun setLocationDescription(addressInfo : Address){
+
+        this.locationDescription = addressInfo
+        latitude = locationDescription!!.latitude
+        longitude = locationDescription!!.longitude
+        var resp = ApiInterface.GetRealTimeStats(latitude, longitude, tempUnitFahrenheit) { stats ->
+            if(stats != null){
+                this@LocationInfo.temperature = stats.temp.value!!
+                this@LocationInfo.humidity = stats.humidity.value!!
+                mAct.supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragContainer, weatherDisplayFragment.newInstance(this@LocationInfo))
+                    .commit()
+            }
+        }
+    }
+
+    fun getLocationDescription() : Address{
+
+        return locationDescription!!
     }
 
     fun setUseFahrenheit(bool : Boolean){
