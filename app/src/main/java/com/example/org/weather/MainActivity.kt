@@ -10,6 +10,7 @@ import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ProgressBar
 import androidx.core.app.ActivityCompat
 import androidx.core.graphics.scale
 import kotlinx.android.synthetic.main.activity_main.*
@@ -22,23 +23,22 @@ class MainActivity : AppCompatActivity() {
     private var infoContainer : LocationInfo? = null
     private var preferences : SharedPreferences? = null
     private val prefName = "PREFS"
+    var spinner: ProgressBar? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+        spinner = findViewById(R.id.progressBar1) as ProgressBar
         preferences = PreferenceManager.getDefaultSharedPreferences(this)
         infoContainer = LocationInfo(this, this, loadUnitPreferenceFromFile())
-
-
         infoContainer!!.updateLocationInfo()
-        infoContainer!!.logInfo()
 
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
 
-            ApiInterface.GetRealTimeStats(40.0, -105.0, true) { stats ->
+            /*ApiInterface.GetRealTimeStats(40.0, -105.0, true) { stats ->
                 if(stats != null){
                     Log.d("Main Call", stats.observation_time.GetLocalDateTime().toString())
                 }
@@ -70,9 +70,9 @@ class MainActivity : AppCompatActivity() {
 
             ApiInterface.GetLayerPNG(40.0, -105.0,1, "precipitation", "global") { bitmap ->
                 if(bitmap != null){
-                    this.image_view_bitmap.setImageBitmap(bitmap)
+                    //this.image_view_bitmap.setImageBitmap(bitmap)
                 }
-            }
+            }*/
         }
       infoContainer!!.logInfo()
     }

@@ -168,7 +168,7 @@ class ApiInterface {
             }
         }
 
-        fun GetXYTile(lat : Double, lon: Double, zoom : Int) : Pair<Int, Int> {
+        private fun GetXYTile(lat : Double, lon: Double, zoom : Int) : Pair<Int, Int> {
             val latRad = Math.toRadians(lat)
             var xtile = floor( (lon + 180) / 360 * (1 shl zoom) ).toInt()
             var ytile = floor( (1.0 - asinh(tan(latRad)) / PI) / 2 * (1 shl zoom) ).toInt()

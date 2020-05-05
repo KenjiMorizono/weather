@@ -9,6 +9,7 @@ import android.location.*
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat.requestPermissions
 import java.util.*
@@ -16,10 +17,13 @@ import java.util.*
 class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boolean){
     // https://stackoverflow.com/questions/1513485/how-do-i-get-the-current-gps-location-programmatically-in-android
 
-    private var latitude = 0.0
-    private var longitude = 0.0
-    private var temperature = 0.0
-    private var humidity = 0.0
+    private var latitude = 360.0
+    private var longitude = 360.0
+    var RealTimeStats : TimeStats? = null
+    var HistoricalStats : List<TimeStats>? = null
+    var NowcastStats : List<TimeStats>? = null
+    var HourlyStats : List<TimeStats>? = null
+    var DailyStats : List<TimeStats>? = null
     private var tempUnitFahrenheit = unitBoolean
     private var mContext = context
     private var mAct = mainAct
@@ -38,20 +42,14 @@ class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boo
                 locationDescription = geo.getFromLocation(latitude, longitude, 1)[0]
                 Log.d("ADDRESS", locationDescription.toString())
 
-                var resp = ApiInterface.GetRealTimeStats(latitude, longitude, tempUnitFahrenheit) { stats ->
-                    Log.d("INSIDE OF RESP", "TEST")
-                    if(stats != null){
-                        Log.d("STATS", "NOT NULL")
-                        this@LocationInfo.temperature = stats.temp.value!!
-                        this@LocationInfo.humidity = stats.humidity.value!!
-                        Log.d("temp", temperature.toString())
-                        locationManager.removeUpdates(this)
-                        mAct.supportFragmentManager.beginTransaction()
-                            .replace(R.id.fragContainer, weatherDisplayFragment.newInstance(this@LocationInfo))
-                            .commit()
-                    }
-                }
+                mAct.spinner!!.visibility = View.GONE
 
+                mAct.supportFragmentManager.beginTransaction()
+                    .replace(
+                        R.id.fragContainer,
+                        weatherDisplayFragment.newInstance(this@LocationInfo)
+                    )
+                    .commit()
             }
         }
 
@@ -96,17 +94,6 @@ class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boo
             if (location != null && location.time > Calendar.getInstance().timeInMillis - 2 * 60 * 100){
                 latitude = location.latitude
                 longitude = location.longitude
-                var resp = ApiInterface.GetRealTimeStats(latitude, longitude, tempUnitFahrenheit) { stats ->
-                    if(stats != null){
-                        this@LocationInfo.temperature = stats.temp.value!!
-                        this@LocationInfo.humidity = stats.humidity.value!!
-                        Log.d("temp", temperature.toString())
-                        mAct.supportFragmentManager.beginTransaction()
-                            .replace(R.id.fragContainer, weatherDisplayFragment.newInstance(this@LocationInfo))
-                            .commit()
-                    }
-                }
-
 
             }
             else {
@@ -174,19 +161,9 @@ class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boo
         return longitude
     }
 
-    fun getTemperature() : Double{
-
-        return temperature
-    }
-
     fun getUnitBoolean() : Boolean {
 
         return tempUnitFahrenheit
-    }
-
-    fun getHumidity() : Double {
-
-        return humidity
     }
 
     fun getRequestPermissionCode() : Int{
@@ -198,15 +175,6 @@ class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boo
         this.locationDescription = addressInfo
         latitude = locationDescription!!.latitude
         longitude = locationDescription!!.longitude
-        var resp = ApiInterface.GetRealTimeStats(latitude, longitude, tempUnitFahrenheit) { stats ->
-            if(stats != null){
-                this@LocationInfo.temperature = stats.temp.value!!
-                this@LocationInfo.humidity = stats.humidity.value!!
-                mAct.supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragContainer, weatherDisplayFragment.newInstance(this@LocationInfo))
-                    .commit()
-            }
-        }
     }
 
     fun getLocationDescription() : Address{
@@ -216,15 +184,22 @@ class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boo
 
     fun setUseFahrenheit(bool : Boolean){
         this@LocationInfo.tempUnitFahrenheit = bool
-        var resp = ApiInterface.GetRealTimeStats(latitude, longitude, tempUnitFahrenheit) { stats ->
-            if(stats != null){
-                this@LocationInfo.temperature = stats.temp.value!!
-                this@LocationInfo.humidity = stats.humidity.value!!
-                Log.d("temp", temperature.toString())
-                mAct.supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragContainer, weatherDisplayFragment.newInstance(this@LocationInfo))
-                    .commit()
-            }
-        }
+        this.resetLocationInfo()
+    }
+
+    private fun resetLocationInfo()
+    {
+        this.RealTimeStats = null
+        this.HistoricalStats = null
+        this.NowcastStats = null
+        this.HourlyStats = null
+        this.DailyStats = null
+
+        mAct.supportFragmentManager.beginTransaction()
+            .replace(
+                R.id.fragContainer,
+                weatherDisplayFragment.newInstance(this@LocationInfo)
+            )
+            .commit()
     }
 }

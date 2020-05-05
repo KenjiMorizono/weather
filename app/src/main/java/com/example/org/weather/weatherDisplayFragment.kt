@@ -10,12 +10,8 @@ import kotlinx.android.synthetic.main.fragment_weather_display.*
 
 class weatherDisplayFragment : Fragment() {
     private var info : LocationInfo? = null
-    private var temperature = 0.0
-    private var latitude = 0.0
-    private var longitude = 0.0
-    private var humidity = 0.0
-    private var addressInfo : Address? = null
     private val tempPrefix = "°"
+    private var zoom = 5
 
     companion object {
         fun newInstance(locationInfo : LocationInfo) : weatherDisplayFragment {
@@ -35,37 +31,61 @@ class weatherDisplayFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        this@weatherDisplayFragment.temperature = info!!.getTemperature()
-        this@weatherDisplayFragment.latitude = info!!.getLatitude()
-        this@weatherDisplayFragment.longitude = info!!.getLongitude()
-        this@weatherDisplayFragment.humidity = info!!.getHumidity()
-        this@weatherDisplayFragment.addressInfo = info!!.getLocationDescription()
-        updateDisplay()
+
+        if(info!!.RealTimeStats == null) {
+            ApiInterface.GetRealTimeStats(info!!.getLatitude(), info!!.getLongitude(), info!!.getUnitBoolean()) { stats ->
+                info!!.RealTimeStats = stats
+                this.updateRealTimeDisplay()
+            }
+        }
+        else
+        {
+            this.updateRealTimeDisplay()
+        }
+
+        this.btnMinus.setOnClickListener{
+            if(this.zoom > 1)
+            {
+                this.zoom--
+            }
+            this.updatePicture(this.zoom)
+        }
+
+        this.btnPlus.setOnClickListener{
+            if(this.zoom < 12)
+            {
+                this.zoom++
+            }
+            this.updatePicture(this.zoom)
+        }
+
+        this.updatePicture(this.zoom)
     }
 
-    fun updateDisplay(){
-        if (this@weatherDisplayFragment.info!!.getUnitBoolean()){
-            temperatureText.text = temperature.toString() + tempPrefix + "F"
+    fun updateRealTimeDisplay(){
 
-        }
-        else {
-            temperatureText.text = temperature.toString() + tempPrefix + "C"
-
-        }
+        temperatureText.text = info!!.RealTimeStats!!.temp.value.toString() + tempPrefix + info!!.RealTimeStats!!.temp.units
         var locationTextForDisplay = ""
-        var addressDisplayArrayMax : Int = addressInfo!!.maxAddressLineIndex
+        var addressDisplayArrayMax : Int = info!!.getLocationDescription().maxAddressLineIndex
         for(i in 0 .. addressDisplayArrayMax){
             if (i == addressDisplayArrayMax - 1){
-                locationTextForDisplay += addressInfo!!.getAddressLine(i)
+                locationTextForDisplay += info!!.getLocationDescription().getAddressLine(i)
             }
             else {
-                locationTextForDisplay += addressInfo!!.getAddressLine(i) + "\n"
+                locationTextForDisplay += info!!.getLocationDescription().getAddressLine(i) + "\n"
             }
 
         }
 
         locationText.text = locationTextForDisplay
-        humidityText.text = "Humidity: " + humidity.toString() + "%"
+        humidityText.text = "Humidity: " + info!!.RealTimeStats!!.humidity.value.toString() + info!!.RealTimeStats!!.humidity.units
+    }
+
+    fun updatePicture(Zoom : Int){
+        ApiInterface.GetLayerPNG(info!!.getLatitude(), info!!.getLongitude(), Zoom, "precipitation", "global"){ bitmap ->
+            this.weatherIconPlaceholder.visibility = View.VISIBLE
+            this.weatherIconPlaceholder.setImageBitmap(bitmap)
+        }
     }
 
 }
