@@ -10,6 +10,7 @@ import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.ProgressBar
 import androidx.core.app.ActivityCompat
 import androidx.core.graphics.scale
@@ -34,11 +35,11 @@ class MainActivity : AppCompatActivity() {
         infoContainer = LocationInfo(this, this, loadUnitPreferenceFromFile())
         infoContainer!!.updateLocationInfo()
 
-        fab.setOnClickListener { view ->
+        /*fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
 
-            /*ApiInterface.GetRealTimeStats(40.0, -105.0, true) { stats ->
+            ApiInterface.GetRealTimeStats(40.0, -105.0, true) { stats ->
                 if(stats != null){
                     Log.d("Main Call", stats.observation_time.GetLocalDateTime().toString())
                 }
@@ -72,8 +73,8 @@ class MainActivity : AppCompatActivity() {
                 if(bitmap != null){
                     //this.image_view_bitmap.setImageBitmap(bitmap)
                 }
-            }*/
-        }
+            }
+        }*/
       infoContainer!!.logInfo()
     }
 
@@ -88,6 +89,13 @@ override fun onStop() {
                 // Permission to use location is granted, do the same thing as if it was already set
                 infoContainer!!.getLocationInfo()
 
+            }
+            else
+            {
+                spinner!!.visibility = View.GONE
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragContainer, zipCodeEntryFragment.newInstance(infoContainer!!))
+                    .commit()
             }
         }
     }

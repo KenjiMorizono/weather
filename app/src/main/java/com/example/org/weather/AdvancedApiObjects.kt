@@ -17,10 +17,10 @@ class TimeStats {
     val precipitation_type : ApiString = ApiString()
     val cloud_cover : ApiDouble = ApiDouble()
     val fire_index : ApiDouble = ApiDouble()
-    val sunrise : ApiDate = ApiDate()
-    val sunset : ApiDate = ApiDate()
+    val sunrise : ApiDateTime = ApiDateTime()
+    val sunset : ApiDateTime = ApiDateTime()
     val weather_code : ApiString = ApiString()
-    val observation_time: ApiDate = ApiDate()
+    val observation_time: ApiDateTime = ApiDateTime()
 }
 
 class DailyStats {

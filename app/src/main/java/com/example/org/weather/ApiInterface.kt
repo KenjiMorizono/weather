@@ -123,7 +123,7 @@ class ApiInterface {
             }
         }
 
-        fun GetDailyStats(lat: Double, lon: Double, useUSMetric: Boolean, daysAhead: Int, completionHandler: (response: List<DailyStats?>) -> Unit) {
+        fun GetDailyStats(lat: Double, lon: Double, useUSMetric: Boolean, daysAhead: Int, completionHandler: (response: List<DailyStats>?) -> Unit) {
             var unit = if(useUSMetric){
                 "us"
             }

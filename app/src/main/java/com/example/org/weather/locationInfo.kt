@@ -23,7 +23,7 @@ class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boo
     var HistoricalStats : List<TimeStats>? = null
     var NowcastStats : List<TimeStats>? = null
     var HourlyStats : List<TimeStats>? = null
-    var DailyStats : List<TimeStats>? = null
+    var DailyStats : List<DailyStats>? = null
     private var tempUnitFahrenheit = unitBoolean
     private var mContext = context
     private var mAct = mainAct
@@ -84,6 +84,12 @@ class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boo
             else {
                 getLocationInfo()
             }
+        }
+        else {
+            mAct.spinner!!.visibility = View.GONE
+            mAct.supportFragmentManager.beginTransaction()
+                .replace(R.id.fragContainer, zipCodeEntryFragment.newInstance(this@LocationInfo))
+                .commit()
         }
     }
 

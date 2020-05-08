@@ -7,12 +7,14 @@
         android:title="Zip Code"
         app:showAsAction="always" />
     <item
-        android:id="@+id/celsiusOption"
+        android:id="@+id/fahrenheitOption"
         android:orderInCategory="1"
-        android:title="Celsius"
+        android:title="US System"
         app:showAsAction="never" />
     <item
-        android:id="@+id/fahrenheitOption"
+        android:id="@+id/celsiusOption"
         android:orderInCategory="2"
-        android:title="Fahrenheit" />
+        android:title="Metric System (SI)"
+        app:showAsAction="never" />
+
 </menu>
