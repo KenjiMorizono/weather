@@ -53,6 +53,17 @@ class weatherDisplayFragment : Fragment() {
             this.updateRealTimeDisplay()
         }
 
+        if(info!!.HourlyStats == null) {
+            ApiInterface.GetHourlyStats(info!!.getLatitude(), info!!.getLongitude(), info!!.getUnitBoolean(), 24) { stats ->
+                info!!.HourlyStats = stats
+                this.updateHourlyDisplay()
+            }
+        }
+        else
+        {
+            this.updateHourlyDisplay()
+        }
+
         if(info!!.DailyStats == null) {
             ApiInterface.GetDailyStats(info!!.getLatitude(), info!!.getLongitude(), info!!.getUnitBoolean(), 16) { stats ->
                 info!!.DailyStats = stats
@@ -68,16 +79,16 @@ class weatherDisplayFragment : Fragment() {
             if(this.zoom > 1)
             {
                 this.zoom--
+                this.updatePicture(this.zoom)
             }
-            this.updatePicture(this.zoom)
         }
 
         this.btnPlus.setOnClickListener{
             if(this.zoom < 12)
             {
                 this.zoom++
+                this.updatePicture(this.zoom)
             }
-            this.updatePicture(this.zoom)
         }
 
         this.updatePicture(this.zoom)
@@ -110,12 +121,21 @@ class weatherDisplayFragment : Fragment() {
         txtFireIndex.text = "Fire index: ${info!!.RealTimeStats!!.fire_index.value} ${info!!.RealTimeStats!!.fire_index.units}"
     }
 
+    fun updateHourlyDisplay(){
+        this.HourlyPager.adapter = HourlyInfoPagerAdapter(info!!.HourlyStats!!, this.activity)
+        var counter: Int = 0
+
+        while(counter < info!!.HourlyStats!!.size) {
+            this.HourlyPager.addView(TextView(this.activity), counter)
+            counter++
+        }
+    }
+
     fun updateDailyDisplay(){
         this.DailyPager.adapter = DailyInfoPagerAdapter(info!!.DailyStats!!, this.activity)
         var counter: Int = 0
 
         while(counter < info!!.DailyStats!!.size) {
-            //val text_view: TextView = TextView(this.activity)
             this.DailyPager.addView(TextView(this.activity), counter)
             counter++
         }
@@ -128,6 +148,211 @@ class weatherDisplayFragment : Fragment() {
         }
     }
 
+    //https://www.journaldev.com/10096/android-viewpager-example-tutorial
+    class HourlyInfoPagerAdapter constructor(hourlyStatsList: List<TimeStats>, context: Context?) : PagerAdapter() {
+        var statsList: List<TimeStats>? = null
+        var mContext: Context? = null
+
+        init {
+            statsList = hourlyStatsList
+            mContext = context
+        }
+
+        override fun instantiateItem(container: ViewGroup, position: Int): Any {
+
+            val txtHourOfDay: TextView = TextView(this.mContext)
+
+            // Display some text on the newly created text view
+            var dateTime = statsList!![position].observation_time.GetLocalDateTime()
+            if (dateTime != null) {
+                if(dateTime.hour != 0 && dateTime.hour != 12) {
+                    txtHourOfDay.text = if (dateTime.hour > 12) { (dateTime.hour - 12).toString() + " pm" } else { dateTime.hour.toString() + " am" }
+                }
+                else if(dateTime.hour == 0)
+                {
+                    txtHourOfDay.text = "12 am"
+                }
+                else
+                {
+                    txtHourOfDay.text = "12 pm"
+                }
+            }
+
+            this.setHeaderAttributes(txtHourOfDay)
+
+            val txtWeatherCode: TextView = TextView(this.mContext)
+
+            // Display some text on the newly created text view
+            txtWeatherCode.text = "${statsList!![position].weather_code.value!!.replace("_", " ").capitalize()}"
+
+            this.setSmallHeaderAttributes(txtWeatherCode)
+
+            val txtTemp: TextView = TextView(this.mContext)
+
+            // Display some text on the newly created text view
+            txtTemp.text = "Temp: ${statsList!![position].temp!!.value} °${statsList!![position].temp!!.units}"
+
+            this.setBodyAttributes(txtTemp)
+
+            val txtCloudCover: TextView = TextView(this.mContext)
+
+            // Display some text on the newly created text view
+            txtCloudCover.text = "Cloud cover: ${statsList!![position].cloud_cover!!.value}${statsList!![position].cloud_cover!!.units}"
+
+            this.setBodyAttributes(txtCloudCover)
+
+            val txtFeelsLike: TextView = TextView(this.mContext)
+
+            // Display some text on the newly created text view
+            txtFeelsLike.text = "Feels like: ${statsList!![position].feels_like!!.value} °${statsList!![position].feels_like!!.units}"
+
+            this.setBodyAttributes(txtFeelsLike)
+
+            val txtHumidity: TextView = TextView(this.mContext)
+
+            // Display some text on the newly created text view
+            txtHumidity.text = "Humidity: ${statsList!![position].humidity!!.value}${statsList!![position].humidity!!.units}"
+
+            this.setBodyAttributes(txtHumidity)
+
+            val txtWindSpeed: TextView = TextView(this.mContext)
+
+            // Display some text on the newly created text view
+            txtWindSpeed.text = "Wind Speed: ${statsList!![position].wind_speed!!.value} ${statsList!![position].wind_speed!!.units}"
+
+            this.setBodyAttributes(txtWindSpeed)
+
+            val txtPrecipitationType: TextView = TextView(this.mContext)
+
+            // Display some text on the newly created text view
+            txtPrecipitationType.text = "Precipitation type: ${statsList!![position].precipitation_type.value}"
+
+            this.setBodyAttributes(txtPrecipitationType)
+
+            val txtPrecipitation: TextView = TextView(this.mContext)
+
+            // Display some text on the newly created text view
+            txtPrecipitation.text = "Precipitation: ${if(statsList!![position].precipitation.value.toString().contains("E")){0.0} else {statsList!![position].precipitation.value}} ${statsList!![position].precipitation.units}"
+
+            this.setBodyAttributes(txtPrecipitation)
+
+            val txtVisibility: TextView = TextView(this.mContext)
+
+            // Display some text on the newly created text view
+            txtVisibility.text = "Visibility: ${statsList!![position].visibility.value} ${statsList!![position].visibility.units}"
+
+            this.setBodyAttributes(txtVisibility)
+
+            var layout: LinearLayout = LinearLayout(this.mContext)
+            var bitmap: Bitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
+            var paint = Paint()
+            paint.color = mContext!!.getColor(R.color.colorAccent)
+            var canvas = Canvas(bitmap).drawRoundRect(0.0f, 0.0f, 1000.0f, 1000.0f, 100.0f, 100.0f, paint )
+            layout.background = BitmapDrawable(Resources.getSystem(), bitmap)
+            layout.orientation = LinearLayout.VERTICAL
+            layout.addView(txtHourOfDay)
+            if(!txtWeatherCode.text.isNullOrEmpty()) {
+                layout.addView(txtWeatherCode)
+            }
+            if(!txtCloudCover.text.isNullOrEmpty()) {
+                layout.addView(txtCloudCover)
+            }
+            if(!txtTemp.text.isNullOrEmpty()) {
+                layout.addView(txtTemp)
+            }
+            if(!txtFeelsLike.text.isNullOrEmpty()) {
+                layout.addView(txtFeelsLike)
+            }
+            if(!txtHumidity.text.isNullOrEmpty()) {
+                layout.addView(txtHumidity)
+            }
+            if(!txtWindSpeed.text.isNullOrEmpty()) {
+                layout.addView(txtWindSpeed)
+            }
+            if(!txtPrecipitationType.text.isNullOrEmpty()) {
+                layout.addView(txtPrecipitationType)
+            }
+            if(!txtPrecipitation.text.isNullOrEmpty()) {
+                layout.addView(txtPrecipitation)
+            }
+            if(!txtVisibility.text.isNullOrEmpty()) {
+                layout.addView(txtVisibility)
+            }
+
+            container.addView(layout, position)
+
+            return layout
+        }
+
+        fun setHeaderAttributes(txtView: TextView)
+        {
+            // Set the text view font/text size
+            txtView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30F)
+
+            // Set the text view text color
+            txtView.setTextColor(Color.WHITE)
+
+            // Make the text viw text bold italic
+            txtView.setTypeface(txtView.typeface, Typeface.BOLD)
+
+            // Change the text view font
+            //text_view.setTypeface(Typeface.MONOSPACE)
+
+            // Put some padding on text view text
+            //text_view.setPadding(50, 10, 10, 10)
+            txtView.gravity = Gravity.CENTER_HORIZONTAL
+        }
+
+        fun setSmallHeaderAttributes(txtView: TextView)
+        {
+            // Set the text view font/text size
+            txtView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24F)
+
+            // Set the text view text color
+            txtView.setTextColor(Color.WHITE)
+
+            // Make the text viw text bold italic
+            txtView.setTypeface(txtView.typeface, Typeface.BOLD)
+
+            // Change the text view font
+            //text_view.setTypeface(Typeface.MONOSPACE)
+
+            // Put some padding on text view text
+            //text_view.setPadding(50, 10, 10, 10)
+            txtView.gravity = Gravity.CENTER_HORIZONTAL
+        }
+
+        fun setBodyAttributes(txtView: TextView)
+        {
+            // Set the text view font/text size
+            txtView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24F)
+
+            // Set the text view text color
+            txtView.setTextColor(Color.WHITE)
+
+            // Make the text viw text bold italic
+            txtView.setTypeface(txtView.typeface, Typeface.NORMAL)
+
+            // Change the text view font
+            //text_view.setTypeface(Typeface.MONOSPACE)
+
+            // Put some padding on text view text
+            //text_view.setPadding(50, 10, 10, 10)
+            txtView.gravity = Gravity.CENTER_HORIZONTAL
+        }
+
+        override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
+            container.removeView(`object` as View)
+        }
+
+        override fun isViewFromObject(view: View, `object`: Any): Boolean {
+            return view == `object`
+        }
+
+        override fun getCount(): Int {
+            return this.statsList!!.size
+        }
+    }
 
     //https://www.journaldev.com/10096/android-viewpager-example-tutorial
     class DailyInfoPagerAdapter constructor(dailyStatsList: List<DailyStats>, context: Context?) : PagerAdapter() {
@@ -147,7 +372,7 @@ class weatherDisplayFragment : Fragment() {
             if(position != 0) {
                 var dateTime = statsList!![position].observation_time.GetLocalDate()
                 if (dateTime != null) {
-                    txtDayOfWeek.text = dateTime.dayOfWeek.name
+                    txtDayOfWeek.text = dateTime.dayOfWeek.name.toLowerCase().capitalize()
                 }
             }
             else
@@ -162,7 +387,7 @@ class weatherDisplayFragment : Fragment() {
             // Display some text on the newly created text view
             txtWeatherCode.text = "${statsList!![position].weather_code.value!!.replace("_", " ").capitalize()}"
 
-            this.setHeaderAttributes(txtWeatherCode)
+            this.setSmallHeaderAttributes(txtWeatherCode)
 
             val txtTemp: TextView = TextView(this.mContext)
 
@@ -285,11 +510,20 @@ class weatherDisplayFragment : Fragment() {
             // Make the text viw text bold italic
             txtView.setTypeface(txtView.typeface, Typeface.BOLD)
 
-            // Change the text view font
-            //text_view.setTypeface(Typeface.MONOSPACE)
+            txtView.gravity = Gravity.CENTER_HORIZONTAL
+        }
 
-            // Put some padding on text view text
-            //text_view.setPadding(50, 10, 10, 10)
+        fun setSmallHeaderAttributes(txtView: TextView)
+        {
+            // Set the text view font/text size
+            txtView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24F)
+
+            // Set the text view text color
+            txtView.setTextColor(Color.WHITE)
+
+            // Make the text viw text bold italic
+            txtView.setTypeface(txtView.typeface, Typeface.BOLD)
+
             txtView.gravity = Gravity.CENTER_HORIZONTAL
         }
 
@@ -304,11 +538,6 @@ class weatherDisplayFragment : Fragment() {
             // Make the text viw text bold italic
             txtView.setTypeface(txtView.typeface, Typeface.NORMAL)
 
-            // Change the text view font
-            //text_view.setTypeface(Typeface.MONOSPACE)
-
-            // Put some padding on text view text
-            //text_view.setPadding(50, 10, 10, 10)
             txtView.gravity = Gravity.CENTER_HORIZONTAL
         }
 

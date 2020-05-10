@@ -88,7 +88,7 @@ class ApiInterface {
             }
         }
 
-        fun GetHourlyStats(lat: Double, lon: Double, useUSMetric: Boolean, hoursAhead: Int, completionHandler: (response: List<TimeStats?>) -> Unit) {
+        fun GetHourlyStats(lat: Double, lon: Double, useUSMetric: Boolean, hoursAhead: Int, completionHandler: (response: List<TimeStats>?) -> Unit) {
             var unit = if(useUSMetric){
                 "us"
             }
