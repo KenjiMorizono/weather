@@ -35,8 +35,8 @@ class DailyStats {
     val wind_direction : Array<ApiMinMax> = arrayOf<ApiMinMax>()
     val precipitation : Array<ApiMinMax> = arrayOf<ApiMinMax>()
 
-    val sunrise : ApiDate = ApiDate()
-    val sunset : ApiDate = ApiDate()
+    val sunrise : ApiDateTime = ApiDateTime()
+    val sunset : ApiDateTime = ApiDateTime()
     val weather_code : ApiString = ApiString()
     val observation_time: ApiDate = ApiDate()
 }

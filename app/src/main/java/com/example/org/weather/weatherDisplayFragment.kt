@@ -1,9 +1,10 @@
 package com.example.org.weather
 
 import android.content.Context
-import android.graphics.Color
-import android.graphics.Typeface
-import android.graphics.drawable.GradientDrawable
+import android.content.res.Resources
+import android.graphics.*
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.util.TypedValue
@@ -13,7 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView
+import androidx.core.graphics.drawable.RoundedBitmapDrawable
 import androidx.viewpager.widget.PagerAdapter
 import kotlinx.android.synthetic.main.fragment_weather_display.*
 
@@ -84,21 +85,29 @@ class weatherDisplayFragment : Fragment() {
 
     fun updateRealTimeDisplay(){
 
-        temperatureText.text = info!!.RealTimeStats!!.temp.value.toString() + tempPrefix + info!!.RealTimeStats!!.temp.units
         var locationTextForDisplay = ""
         var addressDisplayArrayMax : Int = info!!.getLocationDescription().maxAddressLineIndex
         for(i in 0 .. addressDisplayArrayMax){
             if (i == addressDisplayArrayMax - 1){
-                locationTextForDisplay += info!!.getLocationDescription().getAddressLine(i)
+                locationTextForDisplay += info!!.getLocationDescription().locality + ", " + info!!.getLocationDescription().adminArea + " " + info!!.getLocationDescription().postalCode
             }
             else {
-                locationTextForDisplay += info!!.getLocationDescription().getAddressLine(i) + "\n"
+                locationTextForDisplay += info!!.getLocationDescription().locality + ", " + info!!.getLocationDescription().adminArea + " " + info!!.getLocationDescription().postalCode
             }
 
         }
 
-        locationText.text = locationTextForDisplay
-        humidityText.text = "Humidity: " + info!!.RealTimeStats!!.humidity.value.toString() + info!!.RealTimeStats!!.humidity.units
+        txtLocation.text = locationTextForDisplay
+        txtTemp.text = info!!.RealTimeStats!!.temp.value.toString() + " " + tempPrefix + info!!.RealTimeStats!!.temp.units
+        txtWeatherCode.text = info!!.RealTimeStats!!.weather_code.value!!.replace("_", " ").capitalize()
+        txtFeelsLike.text = "Feels like: ${info!!.RealTimeStats!!.feels_like.value} ${tempPrefix}${info!!.RealTimeStats!!.feels_like.units}"
+        txtCloudCover.text = "Cloud Cover: ${info!!.RealTimeStats!!.cloud_cover.value}${info!!.RealTimeStats!!.cloud_cover.units}"
+        txtHumidity.text = "Humidity: ${info!!.RealTimeStats!!.humidity.value}${info!!.RealTimeStats!!.humidity.units}"
+        txtPrecipitationType.text = "Precipitation type: ${info!!.RealTimeStats!!.precipitation_type.value} ${info!!.RealTimeStats!!.precipitation_type.units}"
+        txtPrecipitation.text = "Precipitation: ${info!!.RealTimeStats!!.precipitation.value} ${info!!.RealTimeStats!!.precipitation.units}"
+        txtVisibility.text = "Visibility: ${info!!.RealTimeStats!!.visibility.value} ${info!!.RealTimeStats!!.visibility.units}"
+        txtWindSpeed.text = "Wind speed: ${info!!.RealTimeStats!!.wind_speed.value} ${info!!.RealTimeStats!!.wind_speed.units}"
+        txtFireIndex.text = "Fire index: ${info!!.RealTimeStats!!.fire_index.value} ${info!!.RealTimeStats!!.fire_index.units}"
     }
 
     fun updateDailyDisplay(){
@@ -148,6 +157,13 @@ class weatherDisplayFragment : Fragment() {
 
             this.setHeaderAttributes(txtDayOfWeek)
 
+            val txtWeatherCode: TextView = TextView(this.mContext)
+
+            // Display some text on the newly created text view
+            txtWeatherCode.text = "${statsList!![position].weather_code.value!!.replace("_", " ").capitalize()}"
+
+            this.setHeaderAttributes(txtWeatherCode)
+
             val txtTemp: TextView = TextView(this.mContext)
 
             // Display some text on the newly created text view
@@ -188,14 +204,70 @@ class weatherDisplayFragment : Fragment() {
 
             this.setBodyAttributes(txtWindSpeed)
 
+            val txtPrecipitation: TextView = TextView(this.mContext)
+
+            // Display some text on the newly created text view
+            var precipitationArray = statsList!![position].precipitation
+            if(!precipitationArray.isNullOrEmpty()) {
+                txtPrecipitation.text = "Precipitation: ${if(precipitationArray[0].GetMinOrMax()!!.value.toString().contains("E")){0.0} else {precipitationArray[0].GetMinOrMax()!!.value}} ${precipitationArray[0].GetMinOrMax()!!.units}"
+            }
+
+            this.setBodyAttributes(txtPrecipitation)
+
+            val txtSunrise: TextView = TextView(this.mContext)
+
+            // Display some text on the newly created text view
+            var dateTimeAM = statsList!![position].sunrise.GetLocalDateTime()
+            if(dateTimeAM != null) {
+                txtSunrise.text = "Sunrise: ${if (dateTimeAM.hour > 12) { dateTimeAM.hour - 12 } else { dateTimeAM.hour }}:${dateTimeAM.minute.toString().padStart(2, '0')} am"
+            }
+
+            this.setBodyAttributes(txtSunrise)
+
+            val txtSunset: TextView = TextView(this.mContext)
+
+            // Display some text on the newly created text view
+            var dateTimePM = statsList!![position].sunset.GetLocalDateTime()
+            if(dateTimePM != null) {
+                txtSunset.text = "Sunset: ${if(dateTimePM.hour > 12) {dateTimePM.hour - 12} else {dateTimePM.hour}}:${dateTimePM.minute.toString().padStart(2, '0')} pm"
+            }
+
+            this.setBodyAttributes(txtSunset)
+
             var layout: LinearLayout = LinearLayout(this.mContext)
-            layout.setBackgroundColor(Color.CYAN)
+            var bitmap: Bitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
+            var paint = Paint()
+            paint.color = mContext!!.getColor(R.color.colorAccent)
+            var canvas = Canvas(bitmap).drawRoundRect(0.0f, 0.0f, 1000.0f, 1000.0f, 100.0f, 100.0f, paint )
+            layout.background = BitmapDrawable(Resources.getSystem(), bitmap)
             layout.orientation = LinearLayout.VERTICAL
             layout.addView(txtDayOfWeek)
-            layout.addView(txtTemp)
-            layout.addView(txtFeelsLike)
-            layout.addView(txtHumidity)
-            layout.addView(txtWindSpeed)
+            if(!txtWeatherCode.text.isNullOrEmpty()) {
+                layout.addView(txtWeatherCode)
+            }
+            if(!txtTemp.text.isNullOrEmpty()) {
+                layout.addView(txtTemp)
+            }
+            if(!txtFeelsLike.text.isNullOrEmpty()) {
+                layout.addView(txtFeelsLike)
+            }
+            if(!txtHumidity.text.isNullOrEmpty()) {
+                layout.addView(txtHumidity)
+            }
+            if(!txtWindSpeed.text.isNullOrEmpty()) {
+                layout.addView(txtWindSpeed)
+            }
+            if(!txtPrecipitation.text.isNullOrEmpty()) {
+                layout.addView(txtPrecipitation)
+            }
+            if(!txtSunrise.text.isNullOrEmpty())
+            {
+                layout.addView(txtSunrise)
+            }
+            if(!txtSunset.text.isNullOrEmpty())
+            {
+                layout.addView(txtSunset)
+            }
 
             container.addView(layout, position)
 
@@ -208,7 +280,7 @@ class weatherDisplayFragment : Fragment() {
             txtView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30F)
 
             // Set the text view text color
-            txtView.setTextColor(Color.BLACK)
+            txtView.setTextColor(Color.WHITE)
 
             // Make the text viw text bold italic
             txtView.setTypeface(txtView.typeface, Typeface.BOLD)
@@ -227,7 +299,7 @@ class weatherDisplayFragment : Fragment() {
             txtView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24F)
 
             // Set the text view text color
-            txtView.setTextColor(Color.BLACK)
+            txtView.setTextColor(Color.WHITE)
 
             // Make the text viw text bold italic
             txtView.setTypeface(txtView.typeface, Typeface.NORMAL)

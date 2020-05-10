@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import com.google.android.material.snackbar.Snackbar
@@ -34,6 +35,7 @@ class MainActivity : AppCompatActivity() {
         preferences = PreferenceManager.getDefaultSharedPreferences(this)
         infoContainer = LocationInfo(this, this, loadUnitPreferenceFromFile())
         infoContainer!!.updateLocationInfo()
+
 
         /*fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
