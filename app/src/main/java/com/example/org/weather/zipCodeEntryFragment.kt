@@ -52,8 +52,8 @@ class zipCodeEntryFragment : Fragment() {
                 info!!.setLatitude(address.latitude)
                 info!!.setLongitude(address.longitude)
                 info!!.resetLocationInfo()
-                var act = activity as MainActivity
-                act.supportFragmentManager.beginTransaction().replace(R.id.fragContainer, weatherDisplayFragment.newInstance(info!!)).commit()
+                //var act = activity as MainActivity
+                //act.supportFragmentManager.beginTransaction().replace(R.id.fragContainer, weatherDisplayFragment.newInstance(info!!)).commit()
             }
             catch (e : Exception) { zipCodeEditText.error = "Please enter a valid Zip Code." }
 
