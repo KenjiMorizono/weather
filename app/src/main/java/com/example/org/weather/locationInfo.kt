@@ -156,9 +156,19 @@ class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boo
 
     }
 
+    fun setLatitude(lat : Double){
+
+        this.latitude = lat
+    }
+
     fun getLatitude() : Double{
 
         return latitude
+    }
+
+    fun setLongitude(lon : Double){
+
+        this.longitude = lon
     }
 
     fun getLongitude() : Double {

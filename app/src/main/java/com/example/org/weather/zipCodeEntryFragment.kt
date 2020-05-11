@@ -49,6 +49,8 @@ class zipCodeEntryFragment : Fragment() {
                 var address = geo.getFromLocationName(zipCodeEditText.text.toString(), 1)[0]
                 Log.d("Address: ", address.toString())
                 info!!.setLocationDescription(address)
+                info!!.setLatitude(address.latitude)
+                info!!.setLongitude(address.longitude)
                 var act = activity as MainActivity
                 act.supportFragmentManager.beginTransaction().replace(R.id.fragContainer, weatherDisplayFragment.newInstance(info!!)).commit()
             }
