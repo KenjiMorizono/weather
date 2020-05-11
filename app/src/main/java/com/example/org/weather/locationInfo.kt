@@ -202,7 +202,7 @@ class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boo
         this.resetLocationInfo()
     }
 
-    private fun resetLocationInfo()
+    fun resetLocationInfo()
     {
         this.RealTimeStats = null
         this.HistoricalStats = null

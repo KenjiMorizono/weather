@@ -51,6 +51,7 @@ class zipCodeEntryFragment : Fragment() {
                 info!!.setLocationDescription(address)
                 info!!.setLatitude(address.latitude)
                 info!!.setLongitude(address.longitude)
+                info!!.resetLocationInfo()
                 var act = activity as MainActivity
                 act.supportFragmentManager.beginTransaction().replace(R.id.fragContainer, weatherDisplayFragment.newInstance(info!!)).commit()
             }
