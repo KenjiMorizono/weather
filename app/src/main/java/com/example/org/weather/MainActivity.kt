@@ -1,6 +1,8 @@
 package com.example.org.weather
 
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import android.content.pm.PackageManager
@@ -34,50 +36,9 @@ class MainActivity : AppCompatActivity() {
         spinner = findViewById(R.id.progressBar1) as ProgressBar
         preferences = PreferenceManager.getDefaultSharedPreferences(this)
         infoContainer = LocationInfo(this, this, loadUnitPreferenceFromFile())
-        infoContainer!!.updateLocationInfo()
+        infoContainer!!.updateLocationInfo(false)
 
-
-        /*fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-
-            ApiInterface.GetRealTimeStats(40.0, -105.0, true) { stats ->
-                if(stats != null){
-                    Log.d("Main Call", stats.observation_time.GetLocalDateTime().toString())
-                }
-            }
-
-            ApiInterface.GetHistoricalStats(40.0, -105.0, true, 60, LocalDateTime.now().minusHours(7)) { statsList ->
-                if(statsList != null){
-                    Log.d("Main Call", statsList[0]!!.observation_time.GetLocalDateTime().toString())
-                }
-            }
-
-            ApiInterface.GetNowcastStats(40.0, -105.0, true, 60, LocalDateTime.now().plusHours(6)) { statsList ->
-                if(statsList != null){
-                    Log.d("Main Call", statsList[0]!!.observation_time.GetLocalDateTime().toString())
-                }
-            }
-
-            ApiInterface.GetHourlyStats(40.0, -105.0, true, 100) { statsList ->
-                if(statsList != null){
-                    Log.d("Main Call", statsList[0]!!.observation_time.GetLocalDateTime().toString())
-                }
-            }
-
-            ApiInterface.GetDailyStats(40.0, -105.0, true, 14) { statsList ->
-                if(statsList != null){
-                    Log.d("Main Call", statsList[0]!!.temp[0].GetMinOrMax()!!.value.toString())
-                }
-            }
-
-            ApiInterface.GetLayerPNG(40.0, -105.0,1, "precipitation", "global") { bitmap ->
-                if(bitmap != null){
-                    //this.image_view_bitmap.setImageBitmap(bitmap)
-                }
-            }
-        }*/
-      infoContainer!!.logInfo()
+        infoContainer!!.logInfo()
     }
 
 override fun onStop() {
@@ -89,7 +50,7 @@ override fun onStop() {
         if (requestCode == infoContainer!!.getRequestPermissionCode()){
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)){
                 // Permission to use location is granted, do the same thing as if it was already set
-                infoContainer!!.getLocationInfo()
+                infoContainer!!.updateLocationInfo(false)
 
             }
             else

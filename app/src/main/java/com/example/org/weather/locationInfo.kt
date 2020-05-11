@@ -1,6 +1,7 @@
 package com.example.org.weather
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -11,6 +12,7 @@ import android.provider.Settings
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
 import java.util.*
 
@@ -67,23 +69,27 @@ class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boo
 
     }
 
-    fun updateLocationInfo(){
+    fun updateLocationInfo(gpsEnableRequested : Boolean){
+
+        if (mAct.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            this.requestPermissions(Manifest.permission.ACCESS_FINE_LOCATION, this.REQUEST_PERMISSION_LOCATION)
+            return
+        }
+
         var gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         Log.d("INFO", "GPS is " + gpsEnabled.toString())
 
-        if (!gpsEnabled){
-            Log.i("WARNING", "GPS NOT AVAILABLE REQUESTING GPS ENABLE...")
-            buildAlertNoGps()
-            gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        if(!gpsEnableRequested) {
+            if (!gpsEnabled) {
+                Log.i("WARNING", "GPS NOT AVAILABLE REQUESTING GPS ENABLE...")
+                buildAlertNoGps()
+                return
+                //gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+            }
         }
 
         if (gpsEnabled){
-            if (!checkPermissions(locationManager)){
-                getPermission()
-            }
-            else {
-                getLocationInfo()
-            }
+            getLocationInfo()
         }
         else {
             mAct.spinner!!.visibility = View.GONE
@@ -117,11 +123,12 @@ class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boo
 
         val positiveButtonClick = { dialog: DialogInterface, which: Int ->
             mContext.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-
+            mAct.finish()
         }
 
         val negativeButtonClick = { dialog: DialogInterface, which: Int ->
             dialog.cancel()
+            updateLocationInfo(true)
         }
 
         builder.setMessage("Your GPS is disabled, do you want to enable it?")
@@ -129,26 +136,18 @@ class LocationInfo (context : Context, mainAct : MainActivity, unitBoolean : Boo
             .setPositiveButton("Yes", DialogInterface.OnClickListener(function = positiveButtonClick))
             .setNegativeButton("No", DialogInterface.OnClickListener(function = negativeButtonClick))
 
+        builder.show()
+
 
     }
 
-    fun checkPermissions(manager : LocationManager): Boolean{ // For when GPS is enabled
-        // https://stackoverflow.com/questions/36280564/how-to-solve-gps-location-provider-security-exception-in-android
-        if (mContext.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-
-            return true
-        }
-
-        return false
-    }
-
-    private fun getPermission(){
-        requestPermissions(
+    fun requestPermissions(permission: String, requestInt: Int)
+    {
+        ActivityCompat.requestPermissions(
             mAct,
-            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-            REQUEST_PERMISSION_LOCATION
+            arrayOf(permission),
+            requestInt
         )
-
     }
 
     fun logInfo(){
